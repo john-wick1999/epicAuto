@@ -173,7 +173,7 @@ def main(file_name):
     # Create a DataFrame
     df = pd.DataFrame(columns=["Client", "Heart failure", "Mobility", "Interpreter", "Alcohol"])
     
-    if client:
+    if clients:
         for client in clients:
             if terminate_program:  # Check if the program should terminate
                 break 
