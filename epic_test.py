@@ -157,7 +157,7 @@ def navigate(client):
     # Press 'Ctrl' + 'Q' to exit
     if terminate_program:  # Check if the program should terminate
         return None
-    pyautogui.hotkey('ctrl', 'q')
+    pyautogui.hotkey('ctrl', 'w')
     
     return output
 
