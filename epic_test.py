@@ -10,6 +10,10 @@ import os
 import re
 import io
 
+# Set the path to the Tesseract executable
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+
+
 keywords_search = [
     '"Heart failure" or "hf" or "HFpEF"  or "HFrEF" or "HFmrEF" or "HFmEF" or "Congestive" or "Cardiomyopathy"',
     '"walker" or "cane" or "roller" or "wheelchair"or "gait" or "mobility" or "exercise" or "walking" or "oxygen"',
