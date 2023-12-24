@@ -173,35 +173,38 @@ def main(file_name):
     # Create a DataFrame
     df = pd.DataFrame(columns=["Client", "Heart failure", "Mobility", "Interpreter", "Alcohol"])
     
-    for client in clients:
-        if terminate_program:  # Check if the program should terminate
-            break 
-        results = navigate(client)
-        
-        if results == None:
-            new_row = pd.DataFrame([{
-                "Client": "Last Client: " + client,
-                "Heart failure": "",
-                "Mobility": "",
-                "Interpreter": "",
-                "Alcohol": ""
+    if client:
+        for client in clients:
+            if terminate_program:  # Check if the program should terminate
+                break 
+            results = navigate(client)
+            
+            if results == None:
+                new_row = pd.DataFrame([{
+                    "Client": "Last Client: " + client,
+                    "Heart failure": "",
+                    "Mobility": "",
+                    "Interpreter": "",
+                    "Alcohol": ""
+                }])
+            elif any(results):
+                new_row = pd.DataFrame([{
+                "Client": client,
+                "Heart failure": "Yes" if results[0] else "",
+                "Mobility": "Yes" if results[1] else "",
+                "Interpreter": "Yes" if results[2] else "",
+                "Alcohol": "Yes" if results[3] else ""
             }])
-        elif any(results):
-            new_row = pd.DataFrame([{
-            "Client": client,
-            "Heart failure": "Yes" if results[0] else "",
-            "Mobility": "Yes" if results[1] else "",
-            "Interpreter": "Yes" if results[2] else "",
-            "Alcohol": "Yes" if results[3] else ""
-        }])
-            
-        df = pd.concat([df, new_row], ignore_index=True)
-            
-    # Save to Excel
-    output_file_path = generate_output_filename("client_results",".xlsx")
-    df.to_excel(output_file_path, index=False)
-    messagebox.showinfo("Process Completed", f"Done!\nOutput file: {output_file_path}")
-    
+                
+            df = pd.concat([df, new_row], ignore_index=True)
+                
+        # Save to Excel
+        output_file_path = generate_output_filename("client_results",".xlsx")
+        df.to_excel(output_file_path, index=False)
+        messagebox.showinfo("Process Completed", f"Done!\nOutput file: {output_file_path}")
+    else:
+        messagebox.showinfo("Client List Empty")
+        
 if __name__ == "__main__":
     # Set up the tkinter window
     root = tk.Tk()
