@@ -120,7 +120,7 @@ def navigate(client):
         if terminate_program:  # Check if the program should terminate
             return None
         
-        pyautogui.moveTo(1247, 124, duration=1)
+        pyautogui.hotkey('ctrl', 'space')
         pyautogui.click()
         if terminate_program:  # Check if the program should terminate
             return None
