@@ -120,13 +120,16 @@ def navigate(client):
         if terminate_program:  # Check if the program should terminate
             return None
         
-        pyautogui.hotkey('ctrl', 'space')
+        pyautogui.moveTo(35, 290, duration=1)
         pyautogui.click()
         if terminate_program:  # Check if the program should terminate
             return None
-        
+        time.sleep(0.5)
+
         pyautogui.write(key, interval=0.1)
-        pyautogui.press('enter')
+        
+        pyautogui.moveTo(16, 290, duration=1)
+        pyautogui.click()
         if terminate_program:  # Check if the program should terminate
             return None
         time.sleep(3)
@@ -157,7 +160,9 @@ def navigate(client):
     # Press 'Ctrl' + 'Q' to exit
     if terminate_program:  # Check if the program should terminate
         return None
-    pyautogui.hotkey('ctrl', 'w')
+    pyautogui.moveTo(338, 59, duration=1)
+    pyautogui.click()
+    time.sleep(1)
     
     return output
 
