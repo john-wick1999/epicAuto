@@ -105,12 +105,14 @@ def navigate(client):
     pyautogui.click()
     if terminate_program:  # Check if the program should terminate
         return None
+    time.sleep(2)
     
     # select patient double click
     pyautogui.moveTo(246, 275, duration=1)
     pyautogui.doubleClick()
     if terminate_program:  # Check if the program should terminate
         return None
+    time.sleep(4)
     
     output = []
     # pattern search check
@@ -127,6 +129,7 @@ def navigate(client):
         pyautogui.press('enter')
         if terminate_program:  # Check if the program should terminate
             return None
+        time.sleep(3)
         
         # implementation to read screen
         # Define the coordinates
