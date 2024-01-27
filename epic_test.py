@@ -118,12 +118,12 @@ def navigate(client):
 
             # Check if the specific text is in the screenshot
             if "Hmm..." in extracted_text or "Sorry..." in extracted_text:
-                output.append(False)
+                output.append(0)
             else:
-                output.append(True)
+                output.append(1)
             
             time.sleep(1)
-        output.append("Manual Check Needed")
+        output.append(-1)
         
     pyautogui.moveTo(338, 59, duration=1)
     pyautogui.click()
@@ -210,9 +210,9 @@ def generate_output_filename(base_name, extension):
         count += 1
         
 def get_result_string(result):
-    if type(result) == str:
-        return result
-    elif result:
+    if result == -1:
+        return "Manual Check Needed"
+    elif result == 1:
         return "Yes"
     else:
         return "No"
