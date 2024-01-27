@@ -179,12 +179,12 @@ def search_box(key: str):
     bottom = 420
     
     width = right-left
-    heigh = bottom-top
-    screenshot = pyautogui.screenshot(region=(left, top, width, heigh))
+    height = bottom-top
+    screenshot = pyautogui.screenshot(region=(left, top, width, height))
     
     saveScreenshot(screenshot)
     
-    x_within_region, y_within_region = find_search_box_coordinates(region)
+    x_within_region, y_within_region = find_search_box_coordinates((left, top, width, height))
 
     if x_within_region is not None and y_within_region is not None:
         x_absolute = left + x_within_region
