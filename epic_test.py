@@ -143,33 +143,26 @@ def navigate(client):
 
 def find_search_box_coordinates(screenshot):
     # Load the smaller template image
-    template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
+    template = cv2.imread('search_bar.jpg', cv2.IMREAD_GRAYSCALE)
 
     # Convert the region and template to grayscale
     region_gray = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
-    template_gray = cv2.cvtColor(template_image, cv2.COLOR_BGR2GRAY)
-
+    img2 = region_gray.copy()
+    w, h = template.shape[::-1]
+    
     # Use template matching to find the template in the region
-    match_result = cv2.matchTemplate(region_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+    match_result = cv2.matchTemplate(region_gray, template, cv2.TM_CCOEFF_NORMED)
 
-    # Define a threshold for matching results
-    threshold = 0.8
-
-    # Find locations where the template matches in the region
-    match_locations = np.where(match_result >= threshold)
-
-    if len(match_locations[0]) > 0:
-        # Get the first match coordinates (assuming there's only one match)
-        match_x, match_y = match_locations[::-1]
-        print("Match found at x={}, y={}".format(match_x[0], match_y[0]))
-
-        # Calculate the coordinates within the region
-        x_within_region = match_x[0]
-        y_within_region = match_y[0]
-
-        return x_within_region, y_within_region
-
-    return None, None
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match_result)
+    
+    if (max_val > 0.8):
+        top_left = max_loc
+        bottom_right = (top_left[0] + w, top_left[1] + h)
+        
+        y_coord = (top_left[1] + bottom_right[1]) // 2
+        
+        return y_coord
+    return None
 
 def search_box(key: str):
     # Capture a screenshot of the area where the search box is expected to be
@@ -182,15 +175,14 @@ def search_box(key: str):
     height = bottom-top
     screenshot = pyautogui.screenshot(region=(left, top, width, height))
     
-    saveScreenshot(screenshot)
+    # saveScreenshot(screenshot)
     
-    x_within_region, y_within_region = find_search_box_coordinates(screenshot)
+    y_coordinate = find_search_box_coordinates(screenshot)
 
-    if x_within_region is not None and y_within_region is not None:
-        x_absolute = left + x_within_region
-        y_absolute = top + y_within_region
+    if y_coordinate:
+        y_absolute = top + y_coordinate
         
-        print("Search box found at y_absolute{}".format(y_absolute))
+        print("Search box found at y absolute{}".format(y_absolute))
         
         # Click on the search box
         pyautogui.moveTo(35, y_absolute, duration=1)
