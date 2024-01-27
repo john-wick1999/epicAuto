@@ -99,29 +99,31 @@ def navigate(client):
     # pattern search check
     for key in keywords_search:
         
-        search_box(key)
-
-        # implementation to read screen
-        # Define the coordinates
-        left = 177
-        top = 213
-        width = 424 - 177
-        height = 293 - 213
+        handled = search_box(key, client)
         
-        # Capture a screenshot of the specified area
-        screenshot = pyautogui.screenshot(region=(left, top, width, height))
-        time.sleep(5)
+        if handled:
+            # implementation to read screen
+            # Define the coordinates
+            left = 177
+            top = 213
+            width = 424 - 177
+            height = 293 - 213
+            
+            # Capture a screenshot of the specified area
+            screenshot = pyautogui.screenshot(region=(left, top, width, height))
+            time.sleep(5)
 
-        # Use OCR to extract text from the screenshot
-        extracted_text = pytesseract.image_to_string(screenshot)
+            # Use OCR to extract text from the screenshot
+            extracted_text = pytesseract.image_to_string(screenshot)
 
-        # Check if the specific text is in the screenshot
-        if "Hmm..." in extracted_text or "Sorry..." in extracted_text:
-            output.append(False)
-        else:
-            output.append(True)
-        
-        time.sleep(1)
+            # Check if the specific text is in the screenshot
+            if "Hmm..." in extracted_text or "Sorry..." in extracted_text:
+                output.append(False)
+            else:
+                output.append(True)
+            
+            time.sleep(1)
+        output.append("Manual Check Needed")
         
     pyautogui.moveTo(338, 59, duration=1)
     pyautogui.click()
@@ -131,28 +133,35 @@ def navigate(client):
 
 def find_search_box_coordinates(screenshot):
     # Load the smaller template image
-    template = cv2.imread('search_bar.jpg', cv2.IMREAD_GRAYSCALE)
+    number_of_tries = 0
+    while (number_of_tries < 3):
+        template = cv2.imread('search_bar.jpg', cv2.IMREAD_GRAYSCALE)
 
-    # Convert the region and template to grayscale
-    region_gray = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
-    img2 = region_gray.copy()
-    w, h = template.shape[::-1]
-    
-    # Use template matching to find the template in the region
-    match_result = cv2.matchTemplate(region_gray, template, cv2.TM_CCOEFF_NORMED)
+        # Convert the region and template to grayscale
+        region_gray = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
+        img2 = region_gray.copy()
+        w, h = template.shape[::-1]
+        
+        # Use template matching to find the template in the region
+        match_result = cv2.matchTemplate(region_gray, template, cv2.TM_CCOEFF_NORMED)
 
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match_result)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(match_result)
+        
+        if (max_val > 0.8):
+            top_left = max_loc
+            bottom_right = (top_left[0] + w, top_left[1] + h)
+            
+            y_coord = (top_left[1] + bottom_right[1]) // 2
+            
+            return y_coord
+        
+        number_of_tries+=1
+        print ("Try {}: unable to locate find box".format(number_of_tries))
     
-    if (max_val > 0.8):
-        top_left = max_loc
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-        
-        y_coord = (top_left[1] + bottom_right[1]) // 2
-        
-        return y_coord
     return None
 
-def search_box(key: str):
+def search_box(key: str, client: str):
+    handled = False
     # Capture a screenshot of the area where the search box is expected to be
     left = 0  # Adjust these coordinates based on your screen
     top = 210
@@ -168,6 +177,7 @@ def search_box(key: str):
     y_coordinate = find_search_box_coordinates(screenshot)
 
     if y_coordinate:
+        handled = True
         y_absolute = top + y_coordinate
         
         print("Search box found at y absolute{}".format(y_absolute))
@@ -183,7 +193,9 @@ def search_box(key: str):
         time.sleep(3)
         
     else:
-        print("Search box not found in the screenshot.")
+        print("Search box for client {} not found. Manually check the patient".format(client))
+    
+    return handled
 
 def saveScreenshot(screenshot):
     # Convert the screenshot to a Pillow Image
@@ -196,6 +208,14 @@ def generate_output_filename(base_name, extension):
         if not os.path.exists(new_name):
             return new_name
         count += 1
+        
+def get_result_string(result):
+    if type(result) == str:
+        return result
+    elif result:
+        return "Yes"
+    else:
+        return "No"
 
 def main(file_name):
     # Example usage
@@ -207,13 +227,13 @@ def main(file_name):
     if clients:
         for client in clients:
             results = navigate(client)
-        
+
             new_row = pd.DataFrame([{
             "Client": client,
-            "Heart failure": "Yes" if results[0] else "No",
-            "Mobility": "Yes" if results[1] else "No",
-            "Interpreter": "Yes" if results[2] else "No",
-            "Alcohol": "Yes" if results[3] else "No"
+            "Heart failure": get_result_string(results[0]),
+            "Mobility": get_result_string(results[1]),
+            "Interpreter": get_result_string(results[2]),
+            "Alcohol":get_result_string(results[3])
             }])
                 
             df = pd.concat([df, new_row], ignore_index=True)
