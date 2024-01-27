@@ -196,8 +196,11 @@ def search_box(key: str):
 
 def saveScreenshot(screenshot):
     # Convert the screenshot to a Pillow Image
-    screenshot_pil = Image.fromarray(screenshot)
+    screenshot.save('screenshot.png')
 
+    # Load the saved screenshot as a Pillow Image
+    screenshot_pil = Image.open('screenshot.png')
+    
     # Save the screenshot to a file (replace 'screenshot.png' with your desired filename)
     screenshot_pil.save('screenshot.png')
 
