@@ -141,12 +141,12 @@ def navigate(client):
     
     return output
 
-def find_search_box_coordinates(region):
+def find_search_box_coordinates(screenshot):
     # Load the smaller template image
     template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
 
     # Convert the region and template to grayscale
-    region_gray = cv2.cvtColor(region, cv2.COLOR_BGR2GRAY)
+    region_gray = cv2.cvtColor(np.array(screenshot), cv2.COLOR_BGR2GRAY)
     template_gray = cv2.cvtColor(template_image, cv2.COLOR_BGR2GRAY)
 
     # Use template matching to find the template in the region
@@ -184,7 +184,7 @@ def search_box(key: str):
     
     saveScreenshot(screenshot)
     
-    x_within_region, y_within_region = find_search_box_coordinates((left, top, width, height))
+    x_within_region, y_within_region = find_search_box_coordinates(screenshot)
 
     if x_within_region is not None and y_within_region is not None:
         x_absolute = left + x_within_region
