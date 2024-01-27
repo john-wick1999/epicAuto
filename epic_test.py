@@ -22,7 +22,6 @@ keywords_search = [
 ]
 
 start_process_flag = False
-terminate_program = False
 
 # def start():
 #     global start_process_flag
@@ -85,60 +84,48 @@ def read_protected_excel(file_name):
         
 def navigate(client):
     # chart Review
-    if terminate_program:  # Check if the program should terminate
-        return None
     pyautogui.moveTo(137, 36, duration=1)
     pyautogui.click()
     
-    if terminate_program:  # Check if the program should terminate
-        return None
 
     # move to name/nrm
     pyautogui.moveTo(111, 111, duration=1)
     pyautogui.click()
-    if terminate_program:  # Check if the program should terminate
-        return None
     
     # write client number
     pyautogui.write(str(client), interval=0.1)
-    if terminate_program:  # Check if the program should terminate
-        return None
         
     # move to find
     pyautogui.moveTo(1247, 124, duration=1)
     pyautogui.click()
-    if terminate_program:  # Check if the program should terminate
-        return None
     time.sleep(2)
     
     # select patient double click
     pyautogui.moveTo(246, 275, duration=1)
     pyautogui.doubleClick()
-    if terminate_program:  # Check if the program should terminate
-        return None
     time.sleep(4)
     
     output = []
     # pattern search check
     for key in keywords_search:
-        if terminate_program:  # Check if the program should terminate
-            return None
         
         # pyautogui.moveTo(35, 290, duration=1)
         # pyautogui.click()
+        
+        time.sleep(1)
         pyautogui.keyDown('ctrl')
-        pyautogui.press('space')
+        pyautogui.keyDown('space')
+        time.sleep(1)
         pyautogui.keyUp('ctrl')
-        if terminate_program:  # Check if the program should terminate
-            return None
-        time.sleep(0.5)
+        pyautogui.keyUp('space')
+        time.sleep(1)
 
         pyautogui.write(key, interval=0.1)
-        pyautogui.press('enter')
+        pyautogui.keyDown('enter')
+        time.sleep(1)
+        pyautogui.keyUp('enter')
         # pyautogui.moveTo(16, 290, duration=1)
         # pyautogui.click()
-        if terminate_program:  # Check if the program should terminate
-            return None
         time.sleep(3)
         
         # implementation to read screen
@@ -150,8 +137,6 @@ def navigate(client):
         
         # Capture a screenshot of the specified area
         screenshot = pyautogui.screenshot(region=(left, top, width, height))
-        if terminate_program:  # Check if the program should terminate
-            return None
 
         # Use OCR to extract text from the screenshot
         extracted_text = pytesseract.image_to_string(screenshot)
@@ -164,8 +149,6 @@ def navigate(client):
         
         time.sleep(1)
         
-    if terminate_program:  # Check if the program should terminate
-        return None
     pyautogui.moveTo(338, 59, duration=1)
     pyautogui.click()
     time.sleep(1)
@@ -189,8 +172,6 @@ def main(file_name):
     
     if clients:
         for client in clients:
-            if terminate_program:  # Check if the program should terminate
-                break 
             results = navigate(client)
             
             if results == None:
