@@ -151,7 +151,9 @@ def search_box(key: str):
     width = right-left
     heigh = bottom-top
     screenshot = pyautogui.screenshot(region=(left, top, width, heigh))
+    
     saveScreenshot(screenshot)
+    
     # Convert the screenshot to a numpy array
     screenshot_np = np.array(screenshot)
 
