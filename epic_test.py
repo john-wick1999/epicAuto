@@ -110,8 +110,7 @@ def navigate(client):
     # pattern search check
     for key in keywords_search:
         
-        # pyautogui.moveTo(35, 290, duration=1)
-        # pyautogui.click()
+        search_box(key)
 
         # implementation to read screen
         # Define the coordinates
@@ -122,6 +121,7 @@ def navigate(client):
         
         # Capture a screenshot of the specified area
         screenshot = pyautogui.screenshot(region=(left, top, width, height))
+        time.sleep(5)
 
         # Use OCR to extract text from the screenshot
         extracted_text = pytesseract.image_to_string(screenshot)
@@ -167,10 +167,20 @@ def search_box(key: str):
     match_locations = np.where(match_result >= threshold)
 
     if len(match_locations[0]) > 0:
+        print("Match found")
         # Calculate the y-axis position based on the matched location
         y_position = min(match_locations[0]) + top
+        print("Match found y-coordinates: {y_position}")
         # Click on the search box
-        pyautogui.click(left + width - 30, y_position)  # Adjust the X coordinate as needed
+        pyautogui.moveTo(35, y_position, duration=1)
+        pyautogui.click()
+        
+        pyautogui.write(key, interval=0.1)
+        
+        pyautogui.moveTo(16, y_position, duration=1)
+        pyautogui.click()
+        time.sleep(3)
+        
     else:
         print("Search box not found in the screenshot.")
     
