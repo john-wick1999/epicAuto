@@ -123,7 +123,8 @@ def navigate(client):
                 output.append(1)
             
             time.sleep(1)
-        output.append(-1)
+        else:    
+            output.append(-1)
         
     pyautogui.moveTo(338, 59, duration=1)
     pyautogui.click()
@@ -161,7 +162,7 @@ def find_search_box_coordinates(screenshot):
     return None
 
 def search_box(key: str, client: str):
-    handled = False
+    handled = True
     # Capture a screenshot of the area where the search box is expected to be
     left = 0  # Adjust these coordinates based on your screen
     top = 210
@@ -193,6 +194,7 @@ def search_box(key: str, client: str):
         time.sleep(3)
         
     else:
+        handled = False
         print("Search box for client {} not found. Manually check the patient".format(client))
     
     return handled
