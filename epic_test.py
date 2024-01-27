@@ -141,6 +141,31 @@ def navigate(client):
     
     return output
 
+def find_search_box_region(screenshot):
+    # Convert the screenshot to a NumPy array
+    screenshot_np = np.array(screenshot)
+
+    # Convert the screenshot to grayscale for contour detection
+    gray = cv2.cvtColor(screenshot_np, cv2.COLOR_BGR2GRAY)
+
+    # Define a lower and upper threshold for contour detection (adjust as needed)
+    lower_threshold = 200
+    upper_threshold = 255
+
+    # Threshold the grayscale image
+    _, thresholded = cv2.threshold(gray, lower_threshold, upper_threshold, cv2.THRESH_BINARY_INV)
+
+    # Find contours in the thresholded image
+    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Filter and keep only the largest contour (assuming it's the search box)
+    if len(contours) > 0:
+        largest_contour = max(contours, key=cv2.contourArea)
+        x, y, w, h = cv2.boundingRect(largest_contour)
+        return x, y, w, h
+
+    return None
+
 def search_box(key: str):
     # Capture a screenshot of the area where the search box is expected to be
     left = 0  # Adjust these coordinates based on your screen
@@ -154,40 +179,20 @@ def search_box(key: str):
     
     saveScreenshot(screenshot)
     
-    # Convert the screenshot to a numpy array
-    screenshot_np = np.array(screenshot)
+    # Find the coordinates and dimensions of the search box region
+    search_box_region = find_search_box_region(screenshot)
 
-    # Load the combined template image containing the loupe symbol and text
-    template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
-    # Compare dimensions of screenshot and template image
-    screenshot_height, screenshot_width, _ = screenshot_np.shape
-    template_height, template_width, _ = template_image.shape
-
-    if template_height > screenshot_height or template_width > screenshot_width:
-        # Resize the template image to match the dimensions of the screenshot
-        template_image = cv2.resize(template_image, (screenshot_width, screenshot_height))
+    if search_box_region is not None:
+        x, y, w, h = search_box_region
+        print("Search box found at x={}, y={}, width={}, height={}".format(x, y, w, h))
         
-    # Use template matching to find the combined loupe symbol and text in the screenshot
-    match_result = cv2.matchTemplate(screenshot_np, template_image, cv2.TM_CCOEFF_NORMED)
-
-    # Define a threshold for matching results
-    threshold = 0.8
-
-    # Find locations where the template matches in the screenshot
-    match_locations = np.where(match_result >= threshold)
-
-    if len(match_locations[0]) > 0:
-        print("Match found")
-        # Calculate the y-axis position based on the matched location
-        y_position = min(match_locations[0]) + top
-        print("Match found y-coordinates: {y_position}")
         # Click on the search box
-        pyautogui.moveTo(35, y_position, duration=1)
+        pyautogui.moveTo(35, top + y, duration=1)
         pyautogui.click()
         
         pyautogui.write(key, interval=0.1)
         
-        pyautogui.moveTo(16, y_position, duration=1)
+        pyautogui.moveTo(16, top + y, duration=1)
         pyautogui.click()
         time.sleep(3)
         
