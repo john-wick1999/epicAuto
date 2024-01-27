@@ -25,18 +25,6 @@ keywords_search = [
 
 start_process_flag = False
 
-# def start():
-#     global start_process_flag
-#     global terminate_program
-    
-#     try:
-#         if key == keyboard.Key.enter and start_process_flag:
-#             threading.Thread(target=main, args=(file_path_entry.get(),)).start()
-#         elif key == keyboard.Key.esc and start_process_flag:  # Set the flag to stop the process when 'esc' is pressed
-#             terminate_program = True
-#     except AttributeError:
-#         pass
-
 def start_process():  
     file_path = file_path_entry.get()
     if os.path.exists(file_path) and file_path_entry.get().endswith('.xlsx'):
@@ -128,7 +116,7 @@ def navigate(client):
         extracted_text = pytesseract.image_to_string(screenshot)
 
         # Check if the specific text is in the screenshot
-        if "Hmm..." in extracted_text:
+        if "Hmm..." in extracted_text or "Sorry..." in extracted_text:
             output.append(False)
         else:
             output.append(True)
