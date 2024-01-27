@@ -141,30 +141,35 @@ def navigate(client):
     
     return output
 
-def find_search_box_region(screenshot):
-    # Convert the screenshot to a NumPy array
-    screenshot_np = np.array(screenshot)
+def find_search_box_coordinates(region):
+    # Load the smaller template image
+    template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
 
-    # Convert the screenshot to grayscale for contour detection
-    gray = cv2.cvtColor(screenshot_np, cv2.COLOR_BGR2GRAY)
+    # Convert the region and template to grayscale
+    region_gray = cv2.cvtColor(region, cv2.COLOR_BGR2GRAY)
+    template_gray = cv2.cvtColor(template_image, cv2.COLOR_BGR2GRAY)
 
-    # Define a lower and upper threshold for contour detection (adjust as needed)
-    lower_threshold = 200
-    upper_threshold = 255
+    # Use template matching to find the template in the region
+    match_result = cv2.matchTemplate(region_gray, template_gray, cv2.TM_CCOEFF_NORMED)
 
-    # Threshold the grayscale image
-    _, thresholded = cv2.threshold(gray, lower_threshold, upper_threshold, cv2.THRESH_BINARY_INV)
+    # Define a threshold for matching results
+    threshold = 0.8
 
-    # Find contours in the thresholded image
-    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Find locations where the template matches in the region
+    match_locations = np.where(match_result >= threshold)
 
-    # Filter and keep only the largest contour (assuming it's the search box)
-    if len(contours) > 0:
-        largest_contour = max(contours, key=cv2.contourArea)
-        x, y, w, h = cv2.boundingRect(largest_contour)
-        return x, y, w, h
+    if len(match_locations[0]) > 0:
+        # Get the first match coordinates (assuming there's only one match)
+        match_x, match_y = match_locations[::-1]
+        print("Match found at x={}, y={}".format(match_x[0], match_y[0]))
 
-    return None
+        # Calculate the coordinates within the region
+        x_within_region = match_x[0]
+        y_within_region = match_y[0]
+
+        return x_within_region, y_within_region
+
+    return None, None
 
 def search_box(key: str):
     # Capture a screenshot of the area where the search box is expected to be
@@ -179,20 +184,21 @@ def search_box(key: str):
     
     saveScreenshot(screenshot)
     
-    # Find the coordinates and dimensions of the search box region
-    search_box_region = find_search_box_region(screenshot)
+    x_within_region, y_within_region = find_search_box_coordinates(region)
 
-    if search_box_region is not None:
-        x, y, w, h = search_box_region
-        print("Search box found at x={}, y={}, width={}, height={}".format(x, y, w, h))
+    if x_within_region is not None and y_within_region is not None:
+        x_absolute = left + x_within_region
+        y_absolute = top + y_within_region
+        
+        print("Search box found at y_absolute{}".format(y_absolute))
         
         # Click on the search box
-        pyautogui.moveTo(35, top + y, duration=1)
+        pyautogui.moveTo(35, y_absolute, duration=1)
         pyautogui.click()
         
         pyautogui.write(key, interval=0.1)
         
-        pyautogui.moveTo(16, top + y, duration=1)
+        pyautogui.moveTo(16, y_absolute, duration=1)
         pyautogui.click()
         time.sleep(3)
         
