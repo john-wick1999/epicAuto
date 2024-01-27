@@ -150,13 +150,20 @@ def search_box(key: str):
     width = right-left
     heigh = bottom-top
     screenshot = pyautogui.screenshot(region=(left, top, width, heigh))
-
+    
     # Convert the screenshot to a numpy array
     screenshot_np = np.array(screenshot)
 
     # Load the combined template image containing the loupe symbol and text
     template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
+    # Compare dimensions of screenshot and template image
+    screenshot_height, screenshot_width, _ = screenshot_np.shape
+    template_height, template_width, _ = template_image.shape
 
+    if template_height > screenshot_height or template_width > screenshot_width:
+        # Resize the template image to match the dimensions of the screenshot
+        template_image = cv2.resize(template_image, (screenshot_width, screenshot_height))
+        
     # Use template matching to find the combined loupe symbol and text in the screenshot
     match_result = cv2.matchTemplate(screenshot_np, template_image, cv2.TM_CCOEFF_NORMED)
 
