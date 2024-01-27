@@ -30,7 +30,7 @@ for meth in methods:
     bottom_right = (top_left[0] + w, top_left[1] + h)
     
     # Calculate the midpoint between top and bottom
-    midpoint = ((top_left[0] + bottom_right[0]) // 2, (top_left[1] + bottom_right[1]) // 2)
+    midpoint = ((top_left[0] + bottom_right[0]) // 2, (top_left[1]+bottom_right[1])// 2)
     results.append((top_left[1] + bottom_right[1]) // 2)
     
     
