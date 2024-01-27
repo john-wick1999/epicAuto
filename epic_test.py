@@ -145,7 +145,7 @@ def search_box(key: str):
     # Capture a screenshot of the area where the search box is expected to be
     left = 0  # Adjust these coordinates based on your screen
     top = 210
-    right = 165
+    right = 365
     bottom = 420
     
     width = right-left
@@ -197,15 +197,6 @@ def search_box(key: str):
 def saveScreenshot(screenshot):
     # Convert the screenshot to a Pillow Image
     screenshot.save('screenshot.png')
-
-    # Load the saved screenshot as a Pillow Image
-    screenshot_pil = Image.open('screenshot.png')
-    
-    # Save the screenshot to a file (replace 'screenshot.png' with your desired filename)
-    screenshot_pil.save('screenshot.png')
-
-    # Close the screenshot
-    screenshot_pil.close()
 
 def generate_output_filename(base_name, extension):
     count = 1
