@@ -1,5 +1,4 @@
 from pynput import keyboard
-import threading
 import pandas as pd
 import pyautogui
 import pytesseract
@@ -9,6 +8,8 @@ import time
 import os
 import re
 import io
+import numpy as np
+import cv2
 
 # Set the path to the Tesseract executable
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -111,23 +112,7 @@ def navigate(client):
         
         # pyautogui.moveTo(35, 290, duration=1)
         # pyautogui.click()
-        
-        time.sleep(1)
-        pyautogui.keyDown('ctrl')
-        pyautogui.keyDown('space')
-        time.sleep(1)
-        pyautogui.keyUp('ctrl')
-        pyautogui.keyUp('space')
-        time.sleep(1)
 
-        pyautogui.write(key, interval=0.1)
-        pyautogui.keyDown('enter')
-        time.sleep(1)
-        pyautogui.keyUp('enter')
-        # pyautogui.moveTo(16, 290, duration=1)
-        # pyautogui.click()
-        time.sleep(3)
-        
         # implementation to read screen
         # Define the coordinates
         left = 177
@@ -155,6 +140,40 @@ def navigate(client):
     
     return output
 
+def search_box(key: str):
+    # Capture a screenshot of the area where the search box is expected to be
+    left = 0  # Adjust these coordinates based on your screen
+    top = 210
+    right = 165
+    bottom = 420
+    
+    width = right-left
+    heigh = bottom-top
+    screenshot = pyautogui.screenshot(region=(left, top, width, heigh))
+
+    # Convert the screenshot to a numpy array
+    screenshot_np = np.array(screenshot)
+
+    # Load the combined template image containing the loupe symbol and text
+    template_image = cv2.imread('search_box_template.png')  # Replace with the actual path to your template image
+
+    # Use template matching to find the combined loupe symbol and text in the screenshot
+    match_result = cv2.matchTemplate(screenshot_np, template_image, cv2.TM_CCOEFF_NORMED)
+
+    # Define a threshold for matching results
+    threshold = 0.8
+
+    # Find locations where the template matches in the screenshot
+    match_locations = np.where(match_result >= threshold)
+
+    if len(match_locations[0]) > 0:
+        # Calculate the y-axis position based on the matched location
+        y_position = min(match_locations[0]) + top
+        # Click on the search box
+        pyautogui.click(left + width - 30, y_position)  # Adjust the X coordinate as needed
+    else:
+        print("Search box not found in the screenshot.")
+    
 def generate_output_filename(base_name, extension):
     count = 1
     while True:
