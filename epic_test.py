@@ -45,7 +45,7 @@ def start_process():
         label = tk.Label(dialog, text="Press 'Start' to begin the program.")
         label.pack(padx=10, pady=10)
         
-        start_button = tk.Button(dialog, text="Start", command=main)
+        start_button = tk.Button(dialog, text="Start", command=lambda: main(file_path_entry.get()))
         start_button.pack(padx=10, pady=10)
     else:
         messagebox.showerror("Error", "Invalid file. Please select a .xlsx file.")
