@@ -24,25 +24,29 @@ keywords_search = [
 start_process_flag = False
 terminate_program = False
 
-def on_press(key):
-    global start_process_flag
-    global terminate_program
+# def start():
+#     global start_process_flag
+#     global terminate_program
     
-    try:
-        if key == keyboard.Key.enter and start_process_flag:
-            threading.Thread(target=main, args=(file_path_entry.get(),)).start()
-        elif key == keyboard.Key.esc and start_process_flag:  # Set the flag to stop the process when 'esc' is pressed
-            terminate_program = True
-    except AttributeError:
-        pass
+#     try:
+#         if key == keyboard.Key.enter and start_process_flag:
+#             threading.Thread(target=main, args=(file_path_entry.get(),)).start()
+#         elif key == keyboard.Key.esc and start_process_flag:  # Set the flag to stop the process when 'esc' is pressed
+#             terminate_program = True
+#     except AttributeError:
+#         pass
 
-def start_process():
-    global start_process_flag
-    
+def start_process():  
     file_path = file_path_entry.get()
     if os.path.exists(file_path) and file_path_entry.get().endswith('.xlsx'):
-        messagebox.showinfo("Information", "Press 'ENTER' to start the program.")
-        start_process_flag = True
+        dialog = tk.Toplevel(root)
+        dialog.title("Start Program")
+        
+        label = tk.Label(dialog, text="Press 'Start' to begin the program.")
+        label.pack(padx=10, pady=10)
+        
+        start_button = tk.Button(dialog, text="Start", command=main)
+        start_button.pack(padx=10, pady=10)
     else:
         messagebox.showerror("Error", "Invalid file. Please select a .xlsx file.")
 
@@ -160,7 +164,6 @@ def navigate(client):
         
         time.sleep(1)
         
-    # Press 'Ctrl' + 'Q' to exit
     if terminate_program:  # Check if the program should terminate
         return None
     pyautogui.moveTo(338, 59, duration=1)
@@ -220,9 +223,6 @@ if __name__ == "__main__":
     # Set up the tkinter window
     root = tk.Tk()
     root.title("Client Data Processor")
-    
-    listener = keyboard.Listener(on_press=on_press)
-    listener.start()
 
     # File path entry
     file_path_entry = tk.Entry(root, width=50)
