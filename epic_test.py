@@ -10,6 +10,7 @@ import re
 import io
 import numpy as np
 import cv2
+from PIL import Image
 
 # Set the path to the Tesseract executable
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
@@ -150,7 +151,7 @@ def search_box(key: str):
     width = right-left
     heigh = bottom-top
     screenshot = pyautogui.screenshot(region=(left, top, width, heigh))
-    
+    saveScreenshot(screenshot)
     # Convert the screenshot to a numpy array
     screenshot_np = np.array(screenshot)
 
@@ -190,7 +191,17 @@ def search_box(key: str):
         
     else:
         print("Search box not found in the screenshot.")
-    
+
+def saveScreenshot(screenshot):
+    # Convert the screenshot to a Pillow Image
+    screenshot_pil = Image.fromarray(screenshot)
+
+    # Save the screenshot to a file (replace 'screenshot.png' with your desired filename)
+    screenshot_pil.save('screenshot.png')
+
+    # Close the screenshot
+    screenshot_pil.close()
+
 def generate_output_filename(base_name, extension):
     count = 1
     while True:
