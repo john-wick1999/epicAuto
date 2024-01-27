@@ -207,22 +207,13 @@ def main(file_name):
     if clients:
         for client in clients:
             results = navigate(client)
-            
-            if results == None:
-                new_row = pd.DataFrame([{
-                    "Client": "Last Client: " + client,
-                    "Heart failure": "",
-                    "Mobility": "",
-                    "Interpreter": "",
-                    "Alcohol": ""
-                }])
-            elif any(results):
-                new_row = pd.DataFrame([{
-                "Client": client,
-                "Heart failure": "Yes" if results[0] else "",
-                "Mobility": "Yes" if results[1] else "",
-                "Interpreter": "Yes" if results[2] else "",
-                "Alcohol": "Yes" if results[3] else ""
+        
+            new_row = pd.DataFrame([{
+            "Client": client,
+            "Heart failure": "Yes" if results[0] else "No",
+            "Mobility": "Yes" if results[1] else "No",
+            "Interpreter": "Yes" if results[2] else "No",
+            "Alcohol": "Yes" if results[3] else "No"
             }])
                 
             df = pd.concat([df, new_row], ignore_index=True)
